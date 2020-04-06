@@ -14,38 +14,46 @@ var svgCaptcha = require('svg-captcha')
  */
 router.post('/login_pwd', function (req, res) {
   const name = req.body.name
-  const pwd = md5(req.body.pwd)
-  const captcha = req.body.captcha.toLowerCase()
-  console.log('/login_pwd', name, pwd, captcha, req.session)
+  // const pwd = md5(req.body.pwd)
+  const pwd = req.body.pwd
+  // const captcha = req.body.captcha.toLowerCase()
+  // console.log('/login_pwd', name, pwd, captcha, req.session)
+  console.log('/login_pwd', name, pwd)
 
   // 可以对用户名/密码格式进行检查, 如果非法, 返回提示信息
-  if(captcha!==req.session.captcha) {
-    return res.send({code: 1, msg: '验证码不正确'})
-  }
-  // 删除保存的验证码
-  delete req.session.captcha
+  // if(captcha!==req.session.captcha) {
+  //   return res.send({code: 1, msg: '验证码不正确'})
+  // }
+  // // 删除保存的验证码
+  // delete req.session.captcha
 
-  UserModel.findOne({name}, function (err, user) {
-    if (user) {
-      console.log('findUser', user)
-      if (user.pwd !== pwd) {
-        res.send({code: 1, msg: '用户名或密码不正确!'})
-      } else {
-        req.session.userid = user._id
-        res.send({code: 0, data: {_id: user._id, name: user.name, phone: user.phone}})
-      }
-    } else {
-      const userModel = new UserModel({name, pwd})
-      userModel.save(function (err, user) {
-        // 向浏览器端返回cookie(key=value)
-        // res.cookie('userid', user._id, {maxAge: 1000*60*60*24*7})
-        req.session.userid = user._id
-        const data = {_id: user._id, name: user.name}
-        // 3.2. 返回数据(新的user)
-        res.send({code: 0, data})
-      })
-    }
-  })
+  if(req.body.name !== 'aaa' || req.body.pwd !== '1234') {
+    res.send({code: 1, msg: '用户名或密码不正确!'})
+  } else {
+    res.send({code: 0, data: {_id: '100001', name: 'yudi', phone: '0912333666'}})
+  }
+
+  // UserModel.findOne({name}, function (err, user) {
+  //   if (user) {
+  //     console.log('findUser', user)
+  //     if (user.pwd !== pwd) {
+  //       res.send({code: 1, msg: '用户名或密码不正确!'})
+  //     } else {
+  //       req.session.userid = user._id
+  //       res.send({code: 0, data: {_id: user._id, name: user.name, phone: user.phone}})
+  //     }
+  //   } else {
+  //     const userModel = new UserModel({name, pwd})
+  //     userModel.save(function (err, user) {
+  //       // 向浏览器端返回cookie(key=value)
+  //       // res.cookie('userid', user._id, {maxAge: 1000*60*60*24*7})
+  //       req.session.userid = user._id
+  //       const data = {_id: user._id, name: user.name}
+  //       // 3.2. 返回数据(新的user)
+  //       res.send({code: 0, data})
+  //     })
+  //   }
+  // })
 })
 
 /*
@@ -95,27 +103,33 @@ router.post('/login_sms', function (req, res, next) {
   var phone = req.body.phone;
   var code = req.body.code;
   console.log('/login_sms', phone, code);
-  if (users[phone] != code) {
-    res.send({code: 1, msg: '手机号或验证码不正确'});
-    return;
+  // if (users[phone] != code) {
+  //   res.send({code: 1, msg: '手机号或验证码不正确'});
+  //   return;
+  // }
+  // //删除保存的code
+  // delete users[phone];
+
+  if(phone !== '0912333666' || code !== '2222') {
+    res.send({code: 1, msg: '電話或驗證碼不正确!'})
+  } else {
+    res.send({code: 0, data: {_id: '100001', name: 'yudi', phone: '0912333666'}})
   }
-  //删除保存的code
-  delete users[phone];
 
 
-  UserModel.findOne({phone}, function (err, user) {
-    if (user) {
-      req.session.userid = user._id
-      res.send({code: 0, data: user})
-    } else {
-      //存储数据
-      const userModel = new UserModel({phone})
-      userModel.save(function (err, user) {
-        req.session.userid = user._id
-        res.send({code: 0, data: user})
-      })
-    }
-  })
+  // UserModel.findOne({phone}, function (err, user) {
+  //   if (user) {
+  //     req.session.userid = user._id
+  //     res.send({code: 0, data: user})
+  //   } else {
+  //     //存储数据
+  //     const userModel = new UserModel({phone})
+  //     userModel.save(function (err, user) {
+  //       req.session.userid = user._id
+  //       res.send({code: 0, data: user})
+  //     })
+  //   }
+  // })
 
 })
 
